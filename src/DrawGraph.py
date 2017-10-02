@@ -217,6 +217,11 @@ class DrawGraph(object):
         if not self.line_set[self.current_waveform].drawn:
             return
 
+        if self.line_set[self.current_waveform].terminate is not None:
+            self.line_set[self.current_waveform].aspan.remove()
+            self.line_set[self.current_waveform].aspan = None
+            self.line_set[self.current_waveform].terminate = None
+
         self.line_set[self.current_waveform] = LinePoints()  # Resets current line . . .
         self.plot_current_data()
 
@@ -409,7 +414,8 @@ class DrawGraph(object):
         """
 
         # Prevents the user from plotting non-functions . . .
-        if event.xdata > max(self.line_set[self.current_waveform].x):
+        # self.line_set[self.current_waveform].x[-1] returns the maximum x, in this case . . .
+        if event.xdata > self.line_set[self.current_waveform].x[-1]:
             # A list append is much faster than a numpy append . . .
             self.line_set[self.current_waveform].x.append(event.xdata)
             self.line_set[self.current_waveform].y.append(event.ydata)
