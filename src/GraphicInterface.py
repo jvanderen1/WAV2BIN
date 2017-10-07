@@ -34,7 +34,6 @@ class GraphicInterface(tk.Frame):
         :param self.level_entry_var: Holds entry for entering level change
         :param self.graph_tool: Holds 'DrawGraph' object
         :param self.root: Holds graphics root figure
-        :param self.terminate_entry_var: Holds entry for terminate
     """
 
     def __init__(self, root):
@@ -64,7 +63,9 @@ class GraphicInterface(tk.Frame):
             self.root.columnconfigure(i, weight=1)
 
         # Setting ttk styling . . .
-        ttk.Style().configure('W.TButton', background='white')
+        style = ttk.Style()
+        style.configure('W.TButton', background='white')
+        style.configure('W.TLabelframe', background='white', )
 
         # Variables used to keep track of options/entries in the GUI . . .
         self.current_waveform_var = tk.StringVar()      # Used for keeping track of visible waveform . . .
@@ -73,8 +74,7 @@ class GraphicInterface(tk.Frame):
         self.amplitude_entry_var = tk.StringVar()       # Used for keeping track of amplitude entry . . .
         self.cycles_entry_var = tk.StringVar()          # Used for keeping track of cycles entry . . .
         self.frequency_entry_var = tk.StringVar()       # Used for keeping track of frequency entry . . .
-        self.level_entry_var = tk.StringVar()
-        self.terminate_entry_var = tk.StringVar()       # Used for keeping track of terminate entry . . .
+        self.level_entry_var = tk.StringVar()           # Used for keeping track of level entry . . .
 
         # Components not yet initialized in this class are listed below . . .
         self.graph_tool = None
@@ -155,7 +155,7 @@ class GraphicInterface(tk.Frame):
 
         clear_button = ttk.Button(master=self.root, text="Clear", command=self.__clear_graph, style='W.TButton')
         clear_button.config(width=50)
-        clear_button.grid(row=4, column=4, columnspan=2, padx=25)
+        clear_button.grid(row=3, column=4, columnspan=2, padx=25)
 
     # END def feature_clear() #
 
@@ -164,7 +164,7 @@ class GraphicInterface(tk.Frame):
 
         export_button = ttk.Button(self.root, text="Export", command=self.__export, style='W.TButton')
         export_button.config(width=150)
-        export_button.grid(row=8, column=0, columnspan=6, padx=25)
+        export_button.grid(row=7, column=0, columnspan=6, padx=25, pady=10)
 
     # END def __feature_export #
 
@@ -173,13 +173,13 @@ class GraphicInterface(tk.Frame):
 
         # List of options generated . . .
         current_waveform_label = ttk.Label(self.root, text="Current Waveform", background='white')
-        current_waveform_label.grid(row=5, column=0, sticky='e', padx=10)
+        current_waveform_label.grid(row=4, column=0, sticky='e', padx=10)
         options = ["Waveform %d" % i for i in range(len(self.graph_tool.line_set))]
 
         current_waveform = ttk.OptionMenu(self.root, self.current_waveform_var, options[0], *options,
                                           command=self.__change_waveform)
         current_waveform.config(width=15)
-        current_waveform.grid(row=5, column=1, columnspan=2, sticky='w', padx=20)
+        current_waveform.grid(row=4, column=1, columnspan=2, sticky='w', padx=20, pady=15)
 
     # END def feature_option_menu() #
 
@@ -189,7 +189,7 @@ class GraphicInterface(tk.Frame):
         self.graph_tool = DrawGraph()
 
         self.graph_tool.canvas = FigureCanvasTkAgg(self.graph_tool.fig, master=self.root)
-        self.graph_tool.canvas.get_tk_widget().grid(row=0, column=0, rowspan=5, columnspan=4, sticky='nesw')
+        self.graph_tool.canvas.get_tk_widget().grid(row=0, column=0, rowspan=4, columnspan=4, sticky='nesw')
 
         self.graph_tool.set_current_plot(STARTING_WAVEFORM)
 
@@ -198,48 +198,54 @@ class GraphicInterface(tk.Frame):
     def __feature_modify_function(self):
         """Adds an options menu for functions to mix/overwrite, the mix/overwrite buttons, and labels"""
 
+        frame = ttk.LabelFrame(self.root, text="   Utilize Other Graphs   ", style='W.TLabelframe')
+        frame.grid(row=5, column=0, rowspan=2, columnspan=6, sticky='nesw')
+
         # Function Options
         functions_label = ttk.Label(self.root, text="Functions", background='white')
-        functions_label.grid(row=6, column=0, sticky='e', padx=10)
+        functions_label.grid(row=5, column=0, sticky='se', padx=10, pady=20)
 
         options = [key for key in FUNCTIONS]
 
         current_function = ttk.OptionMenu(self.root, self.current_function_var, options[0], *options,
                                           command=self.__function_changed)
         current_function.config(width=15)
-        current_function.grid(row=6, column=1, columnspan=2, sticky='w', padx=20)
+        current_function.grid(row=5, column=1, columnspan=2, sticky='sw', padx=20, pady=20)
 
         # Select Waveform
         options = [i for i in range(len(self.graph_tool.line_set))]
 
         self.current_waveform_func = ttk.OptionMenu(self.root, self.current_waveform_func_var, options[0], *options)
         self.current_waveform_func.config(width=3)
-        self.current_waveform_func.grid(row=6, column=3, sticky='w')
+        self.current_waveform_func.grid(row=5, column=3, sticky='sw', pady=20)
         self.current_waveform_func.grid_remove()  # Hides select Waveform options in the beginning . . .
 
         # Cycles
         vcmd = (self.register(self.__validate_positive_float), '%P')  # %P checks entry currently in entry box . . .
         cycles_label = ttk.Label(self.root, text="Cycles", background='white')
-        cycles_label.grid(row=7, column=0, sticky='e', padx=10)
+        cycles_label.grid(row=6, column=0, sticky='ne', padx=10, pady=20)
         cycles_entry = ttk.Entry(self.root, textvariable=self.cycles_entry_var, validate="key", validatecommand=vcmd)
         cycles_entry.config(width=18)
-        cycles_entry.grid(row=7, column=1, columnspan=2, sticky='w', padx=20)
+        cycles_entry.grid(row=6, column=1, columnspan=2, sticky='nw', padx=20, pady=20)
 
         # Mix Functions
         mix_func_button = ttk.Button(self.root, text="Mix Function", command=self.__mix_function, style='W.TButton')
         mix_func_button.config(width=20)
-        mix_func_button.grid(row=6, column=4, columnspan=2, padx=25)
+        mix_func_button.grid(row=5, column=4, columnspan=2, sticky='swe', padx=25, pady=20)
 
         # Overwrite Functions
         overwrite_func_button = ttk.Button(master=self.root, text="Overwrite Function",
                                            command=self.__overwrite_function)
         overwrite_func_button.config(width=20)
-        overwrite_func_button.grid(row=7, column=4, columnspan=2, padx=25)
+        overwrite_func_button.grid(row=6, column=4, columnspan=2, sticky='nwe', padx=25, pady=20)
 
     # END def __feature_modify_function() #
 
     def __feature_user_graph_change(self):
         """Adds entry to change current graph properties"""
+
+        frame = ttk.LabelFrame(self.root, text="   Basic Graph Properties   ", style='W.TLabelframe')
+        frame.grid(row=0, column=4, rowspan=3, columnspan=2, sticky='nesw', pady=20, ipadx=5, ipady=5)
 
         # Frequency
         vcmd = (self.register(self.__validate_positive_int), '%S')  # %S checks entry currently being typed . . .
@@ -250,10 +256,6 @@ class GraphicInterface(tk.Frame):
         frequency_entry.config(width=15)
         frequency_entry.grid(row=0, column=5, sticky='w', padx=20)
 
-        # TODO: Try adding a LabelFrame in GUI
-        # frame = tk.LabelFrame(self.root, text="testing")
-        # frame.grid(row=0, column=5)
-
         # Amplitude
         vcmd = (self.register(self.__validate_float), '%P')         # %P checks entry currently in entry box . . .
         amplitude_label = ttk.Label(self.root, text="Amplitude", background='white')
@@ -263,23 +265,14 @@ class GraphicInterface(tk.Frame):
         amplitude_entry.config(width=15)
         amplitude_entry.grid(row=1, column=5, sticky='w', padx=20)
 
-        # Terminate
-        vcmd = (self.register(self.__validate_positive_int), '%S')  # %S checks entry currently being typed . . .
-        terminate_label = ttk.Label(self.root, text="Terminate at", background='white')
-        terminate_label.grid(row=2, column=4, sticky='e')
-        terminate_entry = ttk.Entry(self.root, textvariable=self.terminate_entry_var, validate="key", validatecommand=vcmd)
-        terminate_entry.bind("<Return>", self.__add_terminate)
-        terminate_entry.config(width=15)
-        terminate_entry.grid(row=2, column=5, sticky='w', padx=20)
-
         # Level
         vcmd = (self.register(self.__validate_level), '%P')  # %S checks entry currently being typed . . .
         level_label = ttk.Label(self.root, text="Level", background='white')
-        level_label.grid(row=3, column=4, sticky='e')
+        level_label.grid(row=2, column=4, sticky='e')
         level_entry = ttk.Entry(self.root, textvariable=self.level_entry_var, validate="key", validatecommand=vcmd)
-        level_entry.bind("<Return>", self.__change_level)  # TODO: Change this . . .
+        level_entry.bind("<Return>", self.__change_level)
         level_entry.config(width=15)
-        level_entry.grid(row=3, column=5, sticky='w', padx=20)
+        level_entry.grid(row=2, column=5, sticky='w', padx=20)
 
     # END __feature_user_graph_change() #
 
@@ -296,22 +289,6 @@ class GraphicInterface(tk.Frame):
         self.level_entry_var.set("")
 
     # END def __change_level() #
-
-    def __add_terminate(self, event):
-        """Adds the option to terminate graph at specific point
-
-        Keyword arguments:
-            :param event: Holds event data (unused)
-        """
-
-        if self.graph_tool.line_set[self.graph_tool.current_waveform].drawn:
-            self.graph_tool.line_set[self.graph_tool.current_waveform].terminate = int(self.terminate_entry_var.get())
-            self.graph_tool.plot_current_data()
-
-        # Clears the text entry data . . .
-        self.terminate_entry_var.set("")
-
-    # END def __add_terminate() #
 
     def __frequency_change(self, event):
         """Used to change current waveforms frequency

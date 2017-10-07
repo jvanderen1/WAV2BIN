@@ -217,11 +217,6 @@ class DrawGraph(object):
         if not self.line_set[self.current_waveform].drawn:
             return
 
-        if self.line_set[self.current_waveform].terminate is not None:
-            self.line_set[self.current_waveform].aspan.remove()
-            self.line_set[self.current_waveform].aspan = None
-            self.line_set[self.current_waveform].terminate = None
-
         self.line_set[self.current_waveform] = LinePoints()  # Resets current line . . .
         self.plot_current_data()
 
@@ -241,14 +236,7 @@ class DrawGraph(object):
             if not line.drawn:
                 data_to_return.append([self.y_min] * (self.x_max - self.x_min + 1))
             else:
-                data = np.copy(line.y)
-
-                if line.terminate is not None:
-                    data[line.terminate + self.x_min:] = 255
-
-                data_to_return.append(data.astype(int).tolist())  # Ensures ints are being received . . .
-
-                del data
+                data_to_return.append(line.y.astype(int).tolist())  # Ensures ints are being received . . .
 
         return data_to_return
 
@@ -257,30 +245,7 @@ class DrawGraph(object):
     def plot_current_data(self):
         """Plots current data"""
 
-        # Will set y values at terminate location to 255 . . .
-        if self.line_set[self.current_waveform].terminate is not None:
-            # New copy of y values are created to not destroy original referenced data . . .
-            y_array = np.copy(self.line_set[self.current_waveform].y)
-
-            y_array[self.line_set[self.current_waveform].terminate:] = 255
-
-            # Draws a grey shaded area for terminated area . . .
-            if self.line_set[self.current_waveform].aspan is not None:
-                self.line_set[self.current_waveform].aspan.remove()
-
-            self.line_set[self.current_waveform].aspan = self.ax.axvspan(self.line_set[self.current_waveform].terminate,
-                                                                         self.x_max,
-                                                                         alpha=0.35, color='gray')
-
-            # Plots points that create the line . . .
-            self.line.set_data(
-                self.line_set[self.current_waveform].x[self.x_min:self.line_set[self.current_waveform].terminate],
-                self.line_set[self.current_waveform].y[self.x_min:self.line_set[self.current_waveform].terminate])
-            del y_array
-
-        else:
-            self.line.set_data(self.line_set[self.current_waveform].x, self.line_set[self.current_waveform].y)
-
+        self.line.set_data(self.line_set[self.current_waveform].x, self.line_set[self.current_waveform].y)
         self.canvas.draw()
 
     # END def __plot_current_data() #
@@ -291,11 +256,6 @@ class DrawGraph(object):
         Keyword arguments:
             :param current_waveform: Index of waveform desired to be used
         """
-
-        # Removes shading (if needed) before switching . . .
-        if self.current_waveform is not None and self.line_set[self.current_waveform].aspan is not None:
-            self.line_set[self.current_waveform].aspan.remove()
-            self.line_set[self.current_waveform].aspan = None
 
         self.current_waveform = current_waveform  # Current waveform number is updated . . .
         self.ax.set_title("Waveform %d" % current_waveform)  # Axis title is updated for current waveform . . .
@@ -332,7 +292,7 @@ class DrawGraph(object):
 
         # Only go into here when a y value overflows over the desired boundaries . . .
         if self.line_set[self.current_waveform].y.max() > self.y_max or \
-                        self.line_set[self.current_waveform].y.min() < self.y_min:
+           self.line_set[self.current_waveform].y.min() < self.y_min:
             self.__rescale_to_fit()
 
         # Rounds all values to integers . . .
@@ -460,8 +420,6 @@ class LinePoints(object):
         :param self.x: Holds all x plot data (first as a list, for speed reasons, then converted to numpy array)
         :param self.y: Holds all y plot data (first as a list, for speed reasons, then converted to numpy array)
         :param self.drawn: Indicates whether or not graph has been drawn
-        :param self.terminate: Value where the graph terminates
-        :param self.aspan: Holds shading value for termination
     """
 
     def __init__(self):
@@ -470,8 +428,6 @@ class LinePoints(object):
         self.x = []
         self.y = []
         self.drawn = False
-        self.terminate = None
-        self.aspan = None
 
         # END def __init__() #
 
