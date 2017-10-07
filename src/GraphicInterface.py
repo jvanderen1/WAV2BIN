@@ -198,6 +198,7 @@ class GraphicInterface(tk.Frame):
     def __feature_modify_function(self):
         """Adds an options menu for functions to mix/overwrite, the mix/overwrite buttons, and labels"""
 
+        # Adding a label frame around options . . .
         frame = ttk.LabelFrame(self.root, text="   Utilize Other Graphs   ", style='W.TLabelframe')
         frame.grid(row=5, column=0, rowspan=2, columnspan=6, sticky='nesw')
 
@@ -244,6 +245,7 @@ class GraphicInterface(tk.Frame):
     def __feature_user_graph_change(self):
         """Adds entry to change current graph properties"""
 
+        # Adding a label frame around options . . .
         frame = ttk.LabelFrame(self.root, text="   Basic Graph Properties   ", style='W.TLabelframe')
         frame.grid(row=0, column=4, rowspan=3, columnspan=2, sticky='nesw', pady=20, ipadx=5, ipady=5)
 

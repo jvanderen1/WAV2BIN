@@ -18,7 +18,7 @@ x_AXIS_TITLE = "Sample # (ROM Address)"
 y_AXIS_TITLE = "Amplitude"
 
 x_MIN, x_MAX = 0, 255
-y_MIN, y_MAX = 0, 254
+y_MIN, y_MAX = 0, 255
 
 x_MINOR_TICKS, x_MAJOR_TICKS = 61, 4
 y_MINOR_TICKS, y_MAJOR_TICKS = 29, 8
@@ -79,6 +79,10 @@ class DrawGraph(object):
         self.__Motion_cid = None
         self.__Enter_cid = None
         self.__Exit_cid = None
+
+        # Variable used to reduce component tracing . . .
+        self.current_x = None
+        self.current_y = None
 
     # END def __init__() #
 
@@ -218,6 +222,11 @@ class DrawGraph(object):
             return
 
         self.line_set[self.current_waveform] = LinePoints()  # Resets current line . . .
+
+        # Re-references current_x and current_y for drawing . . .
+        self.current_x = self.line_set[self.current_waveform].x
+        self.current_y = self.line_set[self.current_waveform].y
+
         self.plot_current_data()
 
         # Re-enable entering axis . . .
@@ -264,6 +273,10 @@ class DrawGraph(object):
         # Will only allow the user to draw a line if LinePoints.drawn is True . . .
         if not self.line_set[self.current_waveform].drawn:
 
+            # Variables current_x and current_y are only used for hand-drawing . . .
+            self.current_x = self.line_set[self.current_waveform].x
+            self.current_y = self.line_set[self.current_waveform].y
+
             # Reset most cid values . . .
             self.__Motion_cid = None
             self.__Exit_cid = None
@@ -296,7 +309,7 @@ class DrawGraph(object):
             self.__rescale_to_fit()
 
         # Rounds all values to integers . . .
-        self.line_set[self.current_waveform].y = np.round(self.line_set[self.current_waveform].y)
+            self.line_set[self.current_waveform].y = np.round(self.line_set[self.current_waveform].y)
 
     # END def __check_plot_details() #
 
@@ -315,8 +328,8 @@ class DrawGraph(object):
         f = np.poly1d(coefficients)
 
         self.line_set[self.current_waveform].x = np.linspace(self.x_min,  # Creates an equally spaced set of x points
-                                                             self.x_max,  # at every integer . . .
-                                                             self.x_max - self.x_min + 1)
+                                                 self.x_max,  # at every integer . . .
+                                                 self.x_max - self.x_min + 1)
         self.line_set[self.current_waveform].y = f(self.line_set[self.current_waveform].x)
 
         self.__check_plot_details()
@@ -334,8 +347,8 @@ class DrawGraph(object):
 
         # Makes sure user enters from left side of window . . .
         if event.xdata <= self.x_min + DRAW_WINDOW:
-            self.line_set[self.current_waveform].x.append(event.xdata)
-            self.line_set[self.current_waveform].y.append(event.ydata)
+            self.current_x.append(event.xdata)
+            self.current_y.append(event.ydata)
 
             if self.__Motion_cid is None:
                 self.__Motion_cid = self.canvas.mpl_connect('motion_notify_event', self.__hand_draw_on_graph)
@@ -375,12 +388,13 @@ class DrawGraph(object):
 
         # Prevents the user from plotting non-functions . . .
         # self.line_set[self.current_waveform].x[-1] returns the maximum x, in this case . . .
-        if event.xdata > self.line_set[self.current_waveform].x[-1]:
-            # A list append is much faster than a numpy append . . .
-            self.line_set[self.current_waveform].x.append(event.xdata)
-            self.line_set[self.current_waveform].y.append(event.ydata)
 
-            self.line.set_data(self.line_set[self.current_waveform].x, self.line_set[self.current_waveform].y)
+        if event.xdata > self.current_x[-1]:
+            # A list append is much faster than a numpy append . . .
+            self.current_x.append(event.xdata)
+            self.current_y.append(event.ydata)
+
+            self.line.set_data(self.current_x, self.current_y)
             self.canvas.draw()
 
     # END def __hand_draw_on_graph() #
