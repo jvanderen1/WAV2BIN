@@ -501,6 +501,9 @@ class PopupDialog(object):
 
         self.key_pressed = False                                # Variable used to keep track of key press . . .
 
+        icon = resource_path('imgs/' + ICON_NAME)
+        self.top.iconbitmap(icon)
+
     # END def __init__() #
 
     def list_data(self, data_points: list, f):
@@ -566,8 +569,7 @@ def resource_path(relative_path: str) -> str:
     try:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = sys._MEIPASS
-    except Exception:
+    except AttributeError:
         base_path = os.path.abspath(".")
 
-    print("base_path:", base_path)
     return os.path.join(base_path, relative_path)

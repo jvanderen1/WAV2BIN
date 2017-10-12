@@ -38,6 +38,8 @@ class DrawGraph(object):
         :param self.ax: Holds the axis within self.fig
         :param self.canvas: The visual plot on top of self.ax
         :param self.current_waveform: Index to keep track of current waveform
+        :param self.current_x: Temp variable for hand drawing (for x)
+        :param self.current_y: Temp variable for hand drawing (for y)
         :param self.fig: Holds figure lines will be in
         :param self.line: Line plotted on axis
         :param self.line_set: List of 'LinePoints' objects
