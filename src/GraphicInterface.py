@@ -10,7 +10,7 @@ import os
 import sys
 
 # The variables below are set for quick changes without the hassle of sifting through code . . .
-INTERFACE_TITLE = "WAV2BIN"
+INTERFACE_TITLE = "WAV2BIN (Version 1.3) by Joshua Van Deren"
 ICON_NAME = 'App_Icon.ico'
 
 STARTING_WAVEFORM = 0

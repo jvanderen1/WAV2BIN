@@ -247,7 +247,7 @@ class DrawGraph(object):
             if not line.drawn:
                 data_to_return.append([self.y_min] * (self.x_max - self.x_min + 1))
             else:
-                data_to_return.append(line.y.astype(int).tolist())  # Ensures ints are being received . . .
+                data_to_return.append(np.rint(line.y).astype(int))  # Ensures ints are being received . . .
 
         return data_to_return
 
@@ -309,9 +309,6 @@ class DrawGraph(object):
         if self.line_set[self.current_waveform].y.max() > self.y_max or \
            self.line_set[self.current_waveform].y.min() < self.y_min:
             self.__rescale_to_fit()
-
-        # Rounds all values to integers . . .
-            self.line_set[self.current_waveform].y = np.round(self.line_set[self.current_waveform].y)
 
     # END def __check_plot_details() #
 
