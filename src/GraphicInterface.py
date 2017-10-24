@@ -1,5 +1,6 @@
 import tkinter as tk
 import tkinter.filedialog as fd
+from tkinter import messagebox as mb
 from tkinter import ttk
 
 from src.DrawGraph import DrawGraph, FUNCTIONS
@@ -10,7 +11,7 @@ import os
 import sys
 
 # The variables below are set for quick changes without the hassle of sifting through code . . .
-INTERFACE_TITLE = "WAV2BIN (Version 1.3) by Joshua Van Deren"
+INTERFACE_TITLE = "WAV2BIN (Version 1.3)"
 ICON_NAME = 'App_Icon.ico'
 
 STARTING_WAVEFORM = 0
@@ -55,6 +56,8 @@ class GraphicInterface(tk.Frame):
         self.root['bg'] = 'white'
 
         self.root.protocol("WM_DELETE_WINDOW", self.__quit_program)  # Makes the window close button quit program . . .
+
+        self.root.resizable(True, True)     # Allows window to be resized . . .
 
         # Setting weights for each row . . .
         for i in range(ROWS):
@@ -140,8 +143,16 @@ class GraphicInterface(tk.Frame):
     def __export(self):
         """Exports data into a .bin file"""
 
+        # Ask user if they would like to print graphs to pdf . . .
+        response = mb.askyesno(title="Save Waveforms", message="Would you like to save your waveforms as a PDF?", icon=mb.QUESTION)
+
         try:
             with fd.asksaveasfile(mode='wb', initialfile='.bin', defaultextension=".bin", filetypes=[('Generic Binary File (*.bin)', '*.bin')]) as file:
+
+                # Print out graphs to pdf if result == True . . .
+                if response:
+                    file_path = '.'.join(file.name.split('.')[:-1])
+                    self.graph_tool.print_to_pdf(''.join([file_path, '.pdf']))
 
                 dialog = PopupDialog(self.root)
                 dialog.list_data(self.graph_tool.export_data(), file)
@@ -565,6 +576,8 @@ def resource_path(relative_path: str) -> str:
 
     Keyword Arguments:
         relative_path: relative path to .ico file
+
+    :returns string of relative path
     """
     try:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
@@ -573,3 +586,5 @@ def resource_path(relative_path: str) -> str:
         base_path = os.path.abspath(".")
 
     return os.path.join(base_path, relative_path)
+
+# END def resource_path() #

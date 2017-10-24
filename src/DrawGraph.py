@@ -2,6 +2,7 @@ import matplotlib
 
 matplotlib.use('TkAgg')
 from matplotlib import pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 
 import numpy as np
 import scipy.signal
@@ -26,6 +27,9 @@ y_MINOR_TICKS, y_MAJOR_TICKS = 29, 8
 WAVEFORM_COUNT = 32
 
 DRAW_WINDOW = 1.5  # Used to give user leeway when drawing on graph . . .
+
+PAGES = 4
+FIG_COUNT = 8
 
 
 class DrawGraph(object):
@@ -53,11 +57,14 @@ class DrawGraph(object):
     def __init__(self):
         """ Initializes all necessary variables """
 
-        self.fig, self.ax = create_graph(x_axis=x_AXIS_TITLE, y_axis=y_AXIS_TITLE,
-                                         x_min=x_MIN, x_max=x_MAX,
-                                         y_min=y_MIN, y_max=y_MAX,
-                                         x_major_ticks=x_MAJOR_TICKS, x_minor_ticks=x_MINOR_TICKS,
-                                         y_major_ticks=y_MAJOR_TICKS, y_minor_ticks=y_MINOR_TICKS)
+        self.fig = plt.figure()     # Generates a figure for the plot to lie on . . .
+
+        self.ax = create_graph(x_axis=x_AXIS_TITLE, y_axis=y_AXIS_TITLE,
+                               x_min=x_MIN, x_max=x_MAX,
+                               y_min=y_MIN, y_max=y_MAX,
+                               x_major_ticks=x_MAJOR_TICKS, x_minor_ticks=x_MINOR_TICKS,
+                               y_major_ticks=y_MAJOR_TICKS, y_minor_ticks=y_MINOR_TICKS,
+                               fig=self.fig, subplot_section=[1, 1, 1])
 
         # The minimum/maximum values for x and y plot points are recorded . . .
         self.x_min = x_MIN
@@ -216,6 +223,19 @@ class DrawGraph(object):
 
     # END def change_function() #
 
+    def change_level(self, level: int):
+        """Changes the level of the current plot
+
+        Keyword Arguments:
+            :param level: amount graph needs to move
+        """
+
+        self.line_set[self.current_waveform].y += level  # Adds level value to graph . . .
+        self.__check_plot_details()
+        self.plot_current_data()
+
+    # END def change_level() #
+
     def clear_graph(self):
         """Clears 'LinePoints' data"""
 
@@ -241,6 +261,7 @@ class DrawGraph(object):
 
         returns: list of data from graph in binary form
         """
+
         data_to_return = []
 
         for line in self.line_set:
@@ -252,6 +273,51 @@ class DrawGraph(object):
         return data_to_return
 
     # END def export_data() #
+
+    def print_to_pdf(self, file_name: str):
+        """Exports graph data to pdfs
+
+        Keyword arguments:
+            :param file_name: Name of file being saved to
+        """
+
+        # Opens pdf for printing graphs to . . .
+        pp = PdfPages(file_name)
+        fig = plt.figure()
+
+        # Creates 'fig_count' amount of axis' for printing on same page . . .
+        ax = []
+        for i in range(FIG_COUNT):
+
+            # Creates graphs that look the same . . .
+            ax.append(create_graph(x_axis='', y_axis='',
+                                   x_min=x_MIN, x_max=x_MAX,
+                                   y_min=y_MIN, y_max=y_MAX,
+                                   x_major_ticks=x_MAJOR_TICKS, x_minor_ticks=x_MINOR_TICKS,
+                                   y_major_ticks=y_MAJOR_TICKS, y_minor_ticks=y_MINOR_TICKS,
+                                   fig=fig, subplot_section=[4, 2, i + 1]))
+            ax[i].set_yticklabels([])
+            ax[i].set_xticklabels([])
+
+        # Prepares each axis for each page . . .
+        for page in range(PAGES):
+
+            # Plots data . . .
+            for current_figure in range(FIG_COUNT):
+                ax[current_figure].plot(self.line_set[page * FIG_COUNT + current_figure].x,
+                                        self.line_set[page * FIG_COUNT + current_figure].y,
+                                        color='b')
+
+            # Saves current subplots to page . . .
+            pp.savefig()
+
+            # Removes last plotted data . . .
+            for current_figure in range(FIG_COUNT):
+                ax[current_figure].lines.pop(0)
+
+        pp.close()
+
+    # END def __print_to_pdf() #
 
     def plot_current_data(self):
         """Plots current data"""
@@ -288,19 +354,6 @@ class DrawGraph(object):
                 self.__Enter_cid = self.canvas.mpl_connect('axes_enter_event', self.__enter_axes)
 
     # END def set_current_line() #
-
-    def change_level(self, level: int):
-        """Changes the level of the current plot
-
-        Keyword Arguments:
-            :param level: amount graph needs to move
-        """
-
-        self.line_set[self.current_waveform].y += level  # Adds level value to graph . . .
-        self.__check_plot_details()
-        self.plot_current_data()
-
-    # END def change_level() #
 
     def __check_plot_details(self):
         """Checks to make sure plot is right size and is made up of integers"""
@@ -392,7 +445,6 @@ class DrawGraph(object):
             # A list append is much faster than a numpy append . . .
             self.current_x.append(event.xdata)
             self.current_y.append(event.ydata)
-
             self.line.set_data(self.current_x, self.current_y)
             self.canvas.draw()
 
@@ -449,7 +501,8 @@ def create_graph(x_axis: str, y_axis: str,
                  x_min: int, x_max: int,
                  y_min: int, y_max: int,
                  x_major_ticks: int, x_minor_ticks: int,
-                 y_major_ticks: int, y_minor_ticks: int) -> (object, object):
+                 y_major_ticks: int, y_minor_ticks: int,
+                 fig, subplot_section) -> object:
     """
     Creates a graph
 
@@ -464,13 +517,13 @@ def create_graph(x_axis: str, y_axis: str,
         :param x_minor_ticks: minor x ticks count
         :param y_major_ticks: major y ticks count
         :param y_minor_ticks: minor y ticks count
+        :param fig: figure to be plotted on
+        :param subplot_section: section of figure for plot
 
-    :returns: figure and axis to that figure
+    :returns: axis to that figure
     """
 
-    fig = plt.figure()  # Generates a plot for the figure to lie on . . .
-
-    ax = fig.add_subplot(1, 1, 1)  # Places the figure in a specific spot . . .
+    ax = fig.add_subplot(*subplot_section)  # Places the figure in a specific spot . . .
 
     # The x and y axis titles are set here . . .
     ax.set_xlabel(x_axis)
@@ -498,7 +551,7 @@ def create_graph(x_axis: str, y_axis: str,
     plt.xlim(x_min, x_max)
     plt.ylim(y_min, y_max)
 
-    return fig, ax
+    return ax
 
 
 # END def create_graph() #
