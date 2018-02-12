@@ -15,7 +15,7 @@ These instructions will help get you a copy of the project up and running on you
 
 ### Prerequisites
 
-This program runs on `Python 3.x` with the following required packages (also in `requirements.txt`:
+This program runs on `Python 3.x` with the following required packages (also in `requirements.txt`):
 
 ```
 matplotlib
