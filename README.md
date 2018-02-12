@@ -1,6 +1,6 @@
-# Kodimer_Project
+# Kodimer_Project (or WAV2BIN)
 
-![WAV2BIN](https://user-images.githubusercontent.com/22926257/36070629-58ab0984-0ebc-11e8-96fe-b7bbd684c1e5.gif)
+<img alt="WAV2BIN" src="https://user-images.githubusercontent.com/22926257/36070629-58ab0984-0ebc-11e8-96fe-b7bbd684c1e5.gif" width="200" height="200" />
 
 Program to be used concurrently with Dennis Kodimer's CEC 222 lab. Features include:
 
