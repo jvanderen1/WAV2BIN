@@ -28,8 +28,8 @@ scipy
 
 To run this, simply use:
 
-#### Windows `py -3 wav2bin\src`
-#### Mac `python3 wav2bin\src` 
+#### Windows `py -3 wav2bin/src`
+#### Mac `python3 wav2bin/src` 
 
 **For Mac Users**: Included is a `Makefile`, which can be used to run the program by simply executing `make run`
 
