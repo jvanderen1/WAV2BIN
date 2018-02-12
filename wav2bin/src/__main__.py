@@ -18,6 +18,7 @@ def main():
     UI.add_features()               # Adds graph, buttons, options, etc . . .
     UI.mainloop()                   # Starts UI . . .
 
+
 # Program begins execution here . . .
 if __name__ == '__main__':
     main()
