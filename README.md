@@ -28,7 +28,7 @@ scipy
 
 To download WAV2BIN, enter:
 
-`pip install wav2bin`
+`pip3 install wav2bin`
 
 ### Running
 
