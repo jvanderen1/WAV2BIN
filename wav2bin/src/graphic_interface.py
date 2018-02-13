@@ -3,10 +3,10 @@ import tkinter.filedialog as fd
 from tkinter import messagebox as mb
 from tkinter import ttk
 
-from DrawGraph import DrawGraph, FUNCTIONS
+from wav2bin.src.draw_graph import DrawGraph, FUNCTIONS
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-from helper_functions import resource_path
+from wav2bin.src.helper_functions import resource_path
 
 from time import sleep
 

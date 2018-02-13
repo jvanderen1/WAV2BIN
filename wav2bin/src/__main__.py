@@ -1,6 +1,6 @@
 import tkinter as tk
-from GraphicInterface import GraphicInterface
-from SplashScreen import SplashScreen
+from wav2bin.src.graphic_interface import GraphicInterface
+from wav2bin.src.splash_screen import SplashScreen
 
 
 def main():

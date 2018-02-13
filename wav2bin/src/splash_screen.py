@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
-from helper_functions import resource_path
+from wav2bin.src.helper_functions import resource_path
 
 # The variables below are set for quick changes without the hassle of sifting through code . . .
 INTERFACE_TITLE = "WAV2BIN (Version 1.3)"
