@@ -56,7 +56,7 @@ Simply move the mouse from left-to-right on the plot to begin drawing a waveform
 
 **Example:**
 
-![Currently Drawing Waveform](https://user-images.githubusercontent.com/22926257/36080162-1cb9955c-0f49-11e8-9aa5-4f3a41a5df9b.png)
+![Currently Drawing Waveform](https://user-images.githubusercontent.com/22926257/36137127-f6fbc64c-1050-11e8-91b3-f821f94cd3d6.png)
 
 When the right-edge is reached, a complete waveform should be visible.
 
