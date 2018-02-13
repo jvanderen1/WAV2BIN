@@ -15,23 +15,28 @@ These instructions will help get you a copy of the project up and running on you
 
 ### Prerequisites
 
-This program runs on `Python 3.x` with the following required packages (also in `requirements.txt`:
+This program runs on `Python 3.x` with the following required packages:
 
 ```
 matplotlib
 numpy
 scipy 
 ```
-**For Mac Users**: Included is a `Makefile`, which can be used to download the dependencies by simply executing `make init`
+**Note**: The installation will automatically gather and install the required packages.
 
 ### Installing
 
-To run this, simply use:
+To download WAV2BIN, enter:
 
-#### Windows `py -3 wav2bin\src`
-#### Mac `python3 wav2bin\src` 
+`pip install wav2bin`
 
-**For Mac Users**: Included is a `Makefile`, which can be used to run the program by simply executing `make run`
+### Running
+
+To run, enter:
+
+`wav2bin`
+
+and let the magic do it's work.
 
 ## Usage
 Here are some helpful tips and pointers on how to use the software.
