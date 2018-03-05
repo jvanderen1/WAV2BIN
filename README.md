@@ -1,4 +1,4 @@
-WAV2BIN
+# WAV2BIN
 
 <img alt="WAV2BIN" src="https://user-images.githubusercontent.com/22926257/36070629-58ab0984-0ebc-11e8-96fe-b7bbd684c1e5.gif" width="200" height="200" />
 
