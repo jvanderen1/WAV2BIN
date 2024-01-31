@@ -24,6 +24,7 @@ REQUIRED = [
             'numpy',
             'scipy'
             ]
+            
 
 # The rest you shouldn't have to touch too much :)
 # ------------------------------------------------
